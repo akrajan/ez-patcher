@@ -28,18 +28,13 @@
 (defmulti instantiate param-type)
 
 (defmethod instantiate :class [cls]
-  (println "instantiate: is-class = true")
   (let [member-type (symbol (replace-first (str cls) #".* " ""))
         new-obj-statement `(new ~member-type)]
     (eval new-obj-statement)))
 
-(defmethod instantiate :object [x]
-  (println "instantiate: is-class = true")
-  x)
+(defmethod instantiate :object [x] x)
 
-(defmethod instantiate :enum [x]
-  (println "Found enum")
-  x)
+(defmethod instantiate :enum [x] x)
 
 (defn setter-name [property]
   (let [x (subs property 0 1)
@@ -67,17 +62,9 @@
   (let [cur-val (Reflector/invokeInstanceMethod obj
                                                 (getter-name property)
                                                 (to-array []))]
-    (println "get-nested-object: cur-val = " cur-val)
     (or cur-val
-        (let [member-type (:type (fetch-method reflector property))
-              _ (println "Nested object member-type = " member-type " class = " (class member-type))
-              ;; _ (pprint reflector)
-              ]
-          (let [;x (construct (resolve-class (.getContextClassLoader (Thread/currentThread)) member-type))
-                abc `(new ~member-type)
-                _ (println "Going to eval: " abc)
-                x (eval abc)]
-            x)))))
+        (let [member-type (:type (fetch-method reflector property))]
+          (eval `(new ~member-type))))))
 
 
 (declare update-with)
@@ -103,7 +90,6 @@
     (enum? (reflect klass))))
 
 (defn set-val [obj reflector prop value]
-  (println "\nSetval:")
   (let [current-value (Reflector/invokeInstanceMethod obj
                                                       (getter-name prop)
                                                       (to-array []))
@@ -111,9 +97,9 @@
         setter-meta (fetch-method reflector setter)
         property-type (first (:parameter-types setter-meta))
         is-enum-property? (is-enum-class-name? property-type)]
-    (println prop " Value: " current-value " -> " value)
-    (println prop " Type : " (class value) " -> " property-type)
-    (println "class-name "(obj->class-name value) " enum-check = " is-enum-property?)
+    ;; (println prop " Value: " current-value " -> " value)
+    ;; (println prop " Type : " (class value) " -> " property-type)
+    ;; (println "class-name "(obj->class-name value) " enum-check = " is-enum-property?)
 
     (let [final-val
           (match [value (obj->class-name value) property-type is-enum-property?]
@@ -164,7 +150,6 @@
 (defn update-with [obj hash]
   (let [obj (instantiate obj)
         r (reflect obj)]
-    (println "Update obj " obj " with: " hash)
     (doseq [[k v] hash]
       (set-val obj r k v))
     obj))
