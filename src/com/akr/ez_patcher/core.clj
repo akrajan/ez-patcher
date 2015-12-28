@@ -130,11 +130,12 @@
                                                                             obj)))]
                                                         (java.util.ArrayList. new-array))
 
-                 [_ 'java.lang.Double  'java.lang.Float   _]   (float value)
-                 [_ 'java.lang.Integer 'java.lang.Double  _]   (double value)
-                 [_ 'java.lang.Float   'java.lang.Double  _]   (double value)
-                 [_ 'java.lang.Long    'java.lang.Integer _]   (int value)
-                 [_ 'java.lang.Integer 'java.lang.Long    _]   (long value)
+                 [_ 'java.lang.Double  'java.lang.Float     _]   (float value)
+                 [_ 'java.lang.Integer 'java.lang.Double    _]   (double value)
+                 [_ 'java.lang.Float   'java.lang.Double    _]   (double value)
+                 [_ 'java.lang.Long    'java.lang.Integer   _]   (int value)
+                 [_ 'java.lang.Integer 'java.lang.Long      _]   (long value)
+                 [_ 'java.lang.String  'java.lang.Character _]   (first value)
                  [_ 'java.lang.String  _               true]   (let [klass (get-class-by-name property-type)]
                                                                  (Reflector/invokeStaticMethod klass "valueOf" (to-array [value])))
                  :else (-> property-type

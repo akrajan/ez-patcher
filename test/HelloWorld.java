@@ -10,6 +10,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
   String myStr;
   Integer myInt;
   Float myFlt;
+  Character myChar;
   Long myLong;
   Double myDbl;
   HelloWorld innerWorld;
@@ -18,6 +19,10 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   public String getMyStr() {
     return myStr;
+  }
+
+  public Character getMyChar() {
+    return myChar;
   }
 
   public Status getStatus() {
@@ -50,6 +55,10 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   public void setMyStr(String x) {
     this.myStr = x;
+  }
+
+  public void setMyChar(Character x) {
+    this.myChar = x;
   }
 
   public void setMyInt(Integer x) {
@@ -106,7 +115,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   @Override
   public String toString() {
-    return "id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr;
+    return "id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myChar: " + myChar + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr;
   }
 
   public void puts(String a, Integer indentSize) {
@@ -116,7 +125,8 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
       indent.append(" ");
     }
 
-    System.out.println(indent + a + " => id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr);
+    //System.out.println(indent + a + " => id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr);
+    System.out.println(indent + a + " => " + toString());
 
     if(innerWorld != null) {
       innerWorld.puts(a + "(InnerWorld)", indentSize + 2);
@@ -129,14 +139,6 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
         o.puts(a + "(otherWorlds:" + i + ")", indentSize + 2);
       }
     }
-  }
-
-  public void chill(final List<?> aListWithSomeType) {
-    // Here I'd like to get the Class-Object 'SpiderMan'
-    System.out.println(aListWithSomeType.getClass().getGenericSuperclass());
-    System.out.println(((ParameterizedType) aListWithSomeType
-          .getClass()
-          .getGenericSuperclass()).getActualTypeArguments()[0]);
   }
 
   public static void printAll(List<HelloWorld> all) {
@@ -152,6 +154,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
   public static HelloWorld createTestWorld() {
     HelloWorld hw = new HelloWorld();
     hw.id = 0;
+    hw.myChar = 'A';
     hw.myStr = "";
     hw.myInt = 0;
     hw.myFlt = 0.0f;
@@ -173,6 +176,14 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
       return;
     } else if ( w.id == null || a == null || w.id != a ) {
       assertOn(w, "Id doesn't match. Expected: " + a);
+    }
+  }
+
+  public static void assertChar(HelloWorld w, Character a) {
+    if( w.myChar == null && a == null  ) {
+      return;
+    } else if ( w.myChar == null || a == null || w.myChar != a ) {
+      assertOn(w, "Character doesn't match. Expected: " + a);
     }
   }
 
@@ -247,6 +258,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     x.patch(hw, "{}");
     assertId(hw, 0);
     assertStr(hw, "");
+    assertChar(hw, 'A');
     assertInt(hw, 0);
     assertFloat(hw, 0.0f);
     assertLong(hw, 0L);
@@ -287,6 +299,22 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     assertLong(hw, null);
     System.out.println("testLong passed");
   }
+
+  public static void testCharacter(Patcher x) {
+    HelloWorld hw = createTestWorld();
+    hw.myChar = 'A';
+    String json = "{}";
+    x.patch(hw, json);
+    assertChar(hw, 'A');
+
+    x.patch(hw, "{\"myChar\": \"Z\"}");
+    assertChar(hw, 'Z');
+
+    x.patch(hw, "{\"myChar\": null}");
+    assertChar(hw, null);
+    System.out.println("testCharacter passed");
+  }
+
 
   public static void testFloat(Patcher x) {
     HelloWorld hw = createTestWorld();
@@ -456,6 +484,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     testEmpty(x);
     testInteger(x);
     testLong(x);
+    testCharacter(x);
     testFloat(x);
     testDouble(x);
     testString(x);
