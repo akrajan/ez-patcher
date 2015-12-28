@@ -169,32 +169,50 @@ public class HelloWorld implements com.pro.akr.Comparator {
   }
 
   public static void assertId(HelloWorld w, Integer a) {
-    if(w.id != a){
+    if( w.id == null && a == null  ) {
+      return;
+    } else if ( w.id == null || a == null || w.id != a ) {
       assertOn(w, "Id doesn't match. Expected: " + a);
     }
   }
 
   public static void assertStr(HelloWorld w, String a) {
-    if(! w.myStr.equals(a)){
+    if( w.myStr == null && a == null  ) {
+      return;
+    } else if ( w.myStr == null || a == null || !w.myStr.equals(a) ) {
       assertOn(w, "String doesn't match. Expected: " + a);
     }
   }
 
   public static void assertInt(HelloWorld w, Integer a) {
-    if(w.myInt != a){
+    if( w.myInt == null && a == null  ) {
+      return;
+    } else if ( w.myInt == null || a == null || !w.myInt.equals(a) ) {
       assertOn(w, "Integer doesn't match. Expected: " + a);
     }
   }
 
   public static void assertFloat(HelloWorld w, Float a) {
-    if(! w.myFlt.equals(a)){
+    if( w.myFlt == null && a == null  ) {
+      return;
+    } else if ( w.myFlt == null || a == null || !w.myFlt.equals(a) ) {
       assertOn(w, "Float doesn't match. Expected: " + a + " Found: " + w.myFlt);
     }
   }
 
   public static void assertLong(HelloWorld w, Long a) {
-    if(w.myLong != a){
+    if( w.myLong == null && a == null  ) {
+      return;
+    } else if ( w.myLong == null || a == null || !w.myLong.equals(a) ) {
       assertOn(w, "Long doesn't match. Expected: " + a);
+    }
+  }
+
+  public static void assertDouble(HelloWorld w, Double a) {
+    if( w.myDbl == null && a == null  ) {
+      return;
+    } else if ( w.myDbl == null || a == null || !w.myDbl.equals(a) ) {
+      assertOn(w, "Double doesn't match. Expected: " + a);
     }
   }
 
@@ -205,7 +223,9 @@ public class HelloWorld implements com.pro.akr.Comparator {
   //}
 
   public static void assertStatus(HelloWorld w, Status a) {
-    if(w.status != a){
+    if( w.status == null && a == null  ) {
+      return;
+    } else if ( w.status == null || a == null || w.status != a) {
       assertOn(w, "Long doesn't match. Expected: " + a);
     }
   }
@@ -220,12 +240,6 @@ public class HelloWorld implements com.pro.akr.Comparator {
     if(w.others != null) {
       assertOn(w, "Others is expected to be null");
      }
-  }
-
-  public static void assertDouble(HelloWorld w, Double a) {
-    if(!w.myDbl.equals(a)){
-      assertOn(w, "Double doesn't match. Expected: " + a);
-    }
   }
 
   public static void testEmpty(UpdateOnly x) {
