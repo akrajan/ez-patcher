@@ -9,6 +9,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
   Integer id;
   Byte myByte;
   Short myShort;
+  int myNativeInt;
   Integer myInt;
   Long myLong;
   Boolean myBool;
@@ -48,6 +49,10 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     return myInt;
   }
 
+  public int getMyNativeInt() {
+    return myNativeInt;
+  }
+
   public Integer getId() {
     return id;
   }
@@ -78,6 +83,10 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   public void setMyInt(Integer x) {
     this.myInt = x;
+  }
+
+  public void setMyNativeInt(int x) {
+    this.myNativeInt = x;
   }
 
   public void setMyBool(Boolean x) {
@@ -142,8 +151,10 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   @Override
   public String toString() {
-    return "id:  " + id + " myBool: " + myBool + " myByte: " + myByte + " myShort: " + myShort +  " myInt: " + myInt +
-      " myLong: " + myLong + " myChar: " + myChar + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr;
+    return "id:  " + id + " myBool: " + myBool + " myByte: " + myByte + " myShort: " + myShort +
+      " myInt: " + myInt + " myNativeInt: " + myNativeInt + " myLong: " + myLong +
+      " myChar: " + myChar + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status +
+      " myStr: " + myStr;
   }
 
   public void puts(String a, Integer indentSize) {
@@ -187,6 +198,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     hw.myShort = 0;
     hw.myBool = true;
     hw.myInt = 0;
+    hw.myNativeInt = 0;
     hw.myFlt = 0.0f;
     hw.myLong = 0L;
     hw.myDbl = 0.0;
@@ -257,6 +269,12 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     }
   }
 
+  public static void assertNativeInt(HelloWorld w, int a) {
+    if(w.myNativeInt != a){
+      assertOn(w, "Native Integer doesn't match. Expected: " + a);
+    }
+  }
+
   public static void assertFloat(HelloWorld w, Float a) {
     if( w.myFlt == null && a == null  ) {
       return;
@@ -314,6 +332,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     assertStr(hw, "");
     assertChar(hw, 'A');
     assertInt(hw, 0);
+    assertNativeInt(hw, 0);
     assertByte(hw, (byte) 0);
     assertShort(hw, (short) 0);
     assertBool(hw, true);
@@ -384,6 +403,19 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     x.patch(hw, "{\"myInt\": null}");
     assertInt(hw, null);
     System.out.println("testInteger passed");
+  }
+
+  public static void testNativeInteger(Patcher x) {
+    HelloWorld hw = createTestWorld();
+    hw.myNativeInt = 10;
+    String json = "{}";
+    x.patch(hw, json);
+    assertNativeInt(hw, 10);
+
+    x.patch(hw, "{\"myNativeInt\": 50}");
+    assertNativeInt(hw, 50);
+
+    System.out.println("testNativeInteger passed");
   }
 
   public static void testLong(Patcher x) {
@@ -586,6 +618,7 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     testBoolean(x);
     testByte(x);
     testShort(x);
+    testNativeInteger(x);
     testInteger(x);
     testLong(x);
     testCharacter(x);
