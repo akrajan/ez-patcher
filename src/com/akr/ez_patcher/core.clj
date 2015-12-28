@@ -17,8 +17,6 @@
  :methods [[isSame [Object] Boolean]])
 
 
-(defn is-class? [x] (instance? (class x) Class))
-
 (defn param-type [x]
   (cond
    (and (class? x) (. x isEnum)) :enum
