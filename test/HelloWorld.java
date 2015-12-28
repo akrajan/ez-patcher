@@ -242,7 +242,6 @@ public class HelloWorld implements com.pro.akr.Comparator {
     assertId(hw, 0);
     assertStr(hw, "");
     assertInt(hw, 0);
-    hw.puts("");
     assertFloat(hw, 0.0f);
     assertLong(hw, 0L);
     assertDouble(hw, 0.0);
@@ -308,8 +307,8 @@ public class HelloWorld implements com.pro.akr.Comparator {
     x.updateWith(hw, "{\"myDbl\": 50.0}");
     assertDouble(hw, 50.0);
 
-    //x.updateWith(hw, "{\"myDbl\": null}");
-    //assertDouble(hw, null);
+    x.updateWith(hw, "{\"myDbl\": null}");
+    assertDouble(hw, null);
     System.out.println("testDouble passed");
   }
 
@@ -343,22 +342,97 @@ public class HelloWorld implements com.pro.akr.Comparator {
     System.out.println("testStatus passed");
   }
 
-  //public static void testComponent() {
-  //}
+  public static void testComponent(UpdateOnly x) {
+    HelloWorld hw = createTestWorld();
+    HelloWorld innerWorld;
 
-  //public static void testInnerArray() {
-  //}
+    x.updateWith(hw, "{\"innerWorld\": {\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}}");
+    innerWorld = hw.innerWorld;
+    assertStr(innerWorld, null);
+    assertInt(innerWorld, 50);
+    assertDouble(innerWorld, 42.2);
+
+
+    x.updateWith(hw, "{\"innerWorld\": {\"myStr\": \"I Exist\", \"myInt\": 55, \"myDbl\": null}}");
+    assertStr(innerWorld, "I Exist");
+    assertInt(innerWorld, 55);
+    assertDouble(innerWorld, null);
+  }
+
+  public static void testInnerArray(UpdateOnly x) {
+    HelloWorld hw = createTestWorld();
+    HelloWorld other;
+
+    x.updateWith(hw, "{\"others\": [{\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}]}");
+
+    if(hw.others.size() != 1){
+      throw new RuntimeException("Inner Array size doesn't match");
+    }
+    other = hw.others.get(0);
+    assertStr(other, null);
+    assertInt(other, 50);
+    assertDouble(other, 42.2);
+
+    x.updateWith(hw, "{\"others\": []}");
+    if(hw.others.size() != 0){
+      throw new RuntimeException("Inner Array size doesn't match");
+    }
+
+    x.updateWith(hw, "{\"others\": [{\"myStr\": \"First\"}, {\"myStr\": \"Second\"}]}");
+
+    if(hw.others.size() != 2){
+      throw new RuntimeException("Inner Array size doesn't match");
+    }
+    other = hw.others.get(0);
+    assertStr(other, "First");
+
+    other = hw.others.get(1);
+    assertStr(other, "Second");
+
+    System.out.println("Inner Array test passed");
+  }
+
+  public static void testComparator(UpdateOnly x) {
+    HelloWorld hw = createTestWorld();
+    HelloWorld other;
+    x.updateWith(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"First\", \"myInt\": 1}, {\"id\": 2, \"myStr\": \"Second\"}]}");
+
+    x.updateWith(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"Updated First\"}, {\"id\": 3, \"myStr\": \"Third\"}]}");
+    if(hw.others.size() != 2){
+      throw new RuntimeException("Inner Array size doesn't match");
+    }
+    other = hw.others.get(0);
+    assertId(other, 1);
+    assertStr(other, "Updated First");
+    assertInt(other, 1);
+
+    other = hw.others.get(1);
+    assertId(other, 3);
+    assertStr(other, "Third");
+
+    System.out.println("Comparator test passed");
+  }
+
+  public static void testSecondaryNesting(UpdateOnly x) {
+    HelloWorld hw = createTestWorld();
+    HelloWorld other;
+
+    x.updateWith(hw, "{\"others\": [{\"others\":[{\"myStr\": \"Two Levels Deep\"}]} ]}");
+
+    if(hw.others.size() != 1){
+      throw new RuntimeException("Inner Array size doesn't match");
+    }
+    other = hw.others.get(0).others.get(0);
+    assertStr(other, "Two Levels Deep");
+
+    System.out.println("Secondary nesting test passed");
+  }
 
   //public static void testArrayDecode() {
   //}
 
   public static void main(String[] args) throws Exception {
     UpdateOnly x = new UpdateOnly();
-    //System.out.println("Forname = " + Class.forName("HelloWorld$Status"));
-    //String json = "[{\"myStr\": \"Final String\", \"myFlt\": 2.0, \"innerWorld\": {\"myStr\": \"Inner World Str\"}}, {\"myStr\": \"JsonArray2\", \"status\": \"INACTIVE\"}]";
-    //List<HelloWorld> allWorlds = (List<HelloWorld>) x.toArray(json, HelloWorld.class);
-    //printAll(allWorlds);
-
     testEmpty(x);
     testInteger(x);
     testLong(x);
@@ -366,6 +440,10 @@ public class HelloWorld implements com.pro.akr.Comparator {
     testDouble(x);
     testString(x);
     testStatus(x);
+    testComponent(x);
+    testInnerArray(x);
+    testComparator(x);
+    testSecondaryNesting(x);
   }
 }
 
