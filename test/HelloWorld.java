@@ -236,6 +236,12 @@ public class HelloWorld implements com.pro.akr.Comparator {
      }
   }
 
+  public static void assertOthersSize(HelloWorld w, Integer size) {
+    if(w.others.size() != size) {
+      assertOn(w, "Others size mismatch. Expected: " + size + " Found" + w.others.size());
+     }
+  }
+
   public static void testEmpty(UpdateOnly x) {
     HelloWorld hw = createTestWorld();
     x.updateWith(hw, "{}");
@@ -365,9 +371,7 @@ public class HelloWorld implements com.pro.akr.Comparator {
 
     x.updateWith(hw, "{\"others\": [{\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}]}");
 
-    if(hw.others.size() != 1){
-      throw new RuntimeException("Inner Array size doesn't match");
-    }
+    assertOthersSize(hw, 1);
     other = hw.others.get(0);
     assertStr(other, null);
     assertInt(other, 50);
@@ -398,9 +402,7 @@ public class HelloWorld implements com.pro.akr.Comparator {
     x.updateWith(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"First\", \"myInt\": 1}, {\"id\": 2, \"myStr\": \"Second\"}]}");
 
     x.updateWith(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"Updated First\"}, {\"id\": 3, \"myStr\": \"Third\"}]}");
-    if(hw.others.size() != 2){
-      throw new RuntimeException("Inner Array size doesn't match");
-    }
+    assertOthersSize(hw, 2);
     other = hw.others.get(0);
     assertId(other, 1);
     assertStr(other, "Updated First");
@@ -419,17 +421,35 @@ public class HelloWorld implements com.pro.akr.Comparator {
 
     x.updateWith(hw, "{\"others\": [{\"others\":[{\"myStr\": \"Two Levels Deep\"}]} ]}");
 
-    if(hw.others.size() != 1){
-      throw new RuntimeException("Inner Array size doesn't match");
-    }
+    assertOthersSize(hw, 1);
     other = hw.others.get(0).others.get(0);
     assertStr(other, "Two Levels Deep");
 
     System.out.println("Secondary nesting test passed");
   }
 
-  //public static void testArrayDecode() {
-  //}
+  public static void testArrayDecode(UpdateOnly x) {
+    String json = "[{\"myStr\": \"Final String\", \"myFlt\": 2.0, \"innerWorld\": {\"myStr\": \"Inner World String\"}}, {\"myStr\": \"JsonArray2\", \"status\": \"INACTIVE\"}]";
+    List<HelloWorld> allWorlds = (List<HelloWorld>) x.toArray(json, HelloWorld.class);
+
+    if(allWorlds.size() != 2){
+      throw new RuntimeException("Array decode size error");
+    }
+
+    HelloWorld world;
+    world = allWorlds.get(0);
+    assertStr(world, "Final String");
+    assertFloat(world, 2.0f);
+
+    world = world.innerWorld;
+    assertStr(world, "Inner World String");
+
+    world = allWorlds.get(1);
+    assertStr(world, "JsonArray2");
+    assertStatus(world, Status.INACTIVE);
+
+    System.out.println("Array decode test passed");
+  }
 
   public static void main(String[] args) throws Exception {
     UpdateOnly x = new UpdateOnly();
@@ -444,6 +464,7 @@ public class HelloWorld implements com.pro.akr.Comparator {
     testInnerArray(x);
     testComparator(x);
     testSecondaryNesting(x);
+    testArrayDecode(x);
   }
 }
 
