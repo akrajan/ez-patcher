@@ -136,8 +136,8 @@
                  [_ 'java.lang.Integer 'java.lang.Byte      _]   (byte value)
                  [_ 'java.lang.Integer 'java.lang.Short     _]   (short value)
                  [_ 'java.lang.String  'java.lang.Character _]   (first value)
-                 [_ 'java.lang.String  _               true]   (let [klass (get-class-by-name property-type)]
-                                                                 (Reflector/invokeStaticMethod klass "valueOf" (to-array [value])))
+                 [_ 'java.lang.String  _                 true]   (let [klass (get-class-by-name property-type)]
+                                                                   (Reflector/invokeStaticMethod klass "valueOf" (to-array [value])))
                  :else (-> property-type
                              (resolve)
                              (cast value)))]
