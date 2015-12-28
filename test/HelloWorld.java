@@ -16,7 +16,6 @@ public class HelloWorld implements com.pro.akr.Comparator {
   List<HelloWorld> others;
   Status status;
 
-
   public String getMyStr() {
     return myStr;
   }
@@ -90,12 +89,6 @@ public class HelloWorld implements com.pro.akr.Comparator {
   }
 
   public HelloWorld() {
-    this.myStr = "Inital Value";
-    this.myInt = 1;
-    this.myFlt = null;
-    this.myDbl = 100.0;
-    this.innerWorld = null;
-    this.status = Status.ACTIVE;
   }
 
   public Boolean isSame(Object other) {
@@ -108,21 +101,27 @@ public class HelloWorld implements com.pro.akr.Comparator {
   }
 
   public void puts(String a) {
-    System.out.println(a + ": id = " + id);
-    System.out.println(a + ": myStr = " + myStr);
-    System.out.println(a + ": myInt = " + myInt);
-    System.out.println(a + ": myLong = " + myLong);
-    System.out.println(a + ": flt = " + myFlt);
-    System.out.println(a + ": dbl = " + myDbl);
-    System.out.println(a + ": status = " + status);
-    if(innerWorld != null) {
-      innerWorld.puts("Inner");
+    puts(a, 0);
+  }
+
+  public void puts(String a, Integer indentSize) {
+    StringBuffer indent = new StringBuffer("");
+
+    for (int i = 0; i < indentSize; i+= 1) {
+      indent.append(" ");
     }
+
+    System.out.println(indent + a + " => id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr);
+
+    if(innerWorld != null) {
+      innerWorld.puts(a + "(InnerWorld)", indentSize + 2);
+    }
+
     if (others != null) {
       int i = 0;
       for(HelloWorld o: others) {
         i += 1;
-        o.puts("Array" + i);
+        o.puts(a + "(otherWorlds:" + i + ")", indentSize + 2);
       }
     }
   }
@@ -139,7 +138,8 @@ public class HelloWorld implements com.pro.akr.Comparator {
     if(all != null){
       int i = 0;
       for(HelloWorld hw: all) {
-        hw.puts("OuterArray " + (i + 1));
+        i+=1;
+        hw.puts("OuterArray " + i);
       }
     }
   }
