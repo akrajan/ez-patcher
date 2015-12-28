@@ -106,33 +106,35 @@
                  [_ 'clojure.lang.PersistentArrayMap _ _] (let [nested-object (get-nested-object obj reflector prop)]
                                                           (update-with nested-object value)
                                                           nested-object)
-                 [_ 'clojure.lang.PersistentVector _ _] (let [generic-classes (.. (class obj)
-                                                                                (getDeclaredField prop)
-                                                                                (getGenericType)
-                                                                                (getActualTypeArguments))
-                                                            klass (first generic-classes)
-                                                            implements-comparator? (instance? com.pro.akr.ezPatcher.Comparator (instantiate klass))
-                                                            existing-array (into [] (or current-value []))
-                                                            new-array (for [x value
-                                                                            :let [obj (instantiate klass)]]
-                                                                        (do
-                                                                          (update-with obj x)
-                                                                          (if implements-comparator?
-                                                                            (if-let [matching-element (some (fn [elem]
-                                                                                                              (and (. elem isSame obj)
-                                                                                                                   elem))
-                                                                                                            existing-array)]
-                                                                              (do (update-with matching-element x)
-                                                                                  matching-element)
-                                                                              obj)
-                                                                            obj)))]
-                                                        (java.util.ArrayList. new-array))
+                 [_ 'clojure.lang.PersistentVector   _ _] (let [generic-classes (.. (class obj)
+                                                                                    (getDeclaredField prop)
+                                                                                    (getGenericType)
+                                                                                    (getActualTypeArguments))
+                                                                klass (first generic-classes)
+                                                                implements-comparator? (instance? com.pro.akr.ezPatcher.Comparator (instantiate klass))
+                                                                existing-array (into [] (or current-value []))
+                                                                new-array (for [x value
+                                                                                :let [obj (instantiate klass)]]
+                                                                            (do
+                                                                              (update-with obj x)
+                                                                              (if implements-comparator?
+                                                                                (if-let [matching-element (some (fn [elem]
+                                                                                                                  (and (. elem isSame obj)
+                                                                                                                       elem))
+                                                                                                                existing-array)]
+                                                                                  (do (update-with matching-element x)
+                                                                                      matching-element)
+                                                                                  obj)
+                                                                                obj)))]
+                                                            (java.util.ArrayList. new-array))
 
                  [_ 'java.lang.Double  'java.lang.Float     _]   (float value)
                  [_ 'java.lang.Integer 'java.lang.Double    _]   (double value)
                  [_ 'java.lang.Float   'java.lang.Double    _]   (double value)
                  [_ 'java.lang.Long    'java.lang.Integer   _]   (int value)
                  [_ 'java.lang.Integer 'java.lang.Long      _]   (long value)
+                 [_ 'java.lang.Integer 'java.lang.Byte      _]   (byte value)
+                 [_ 'java.lang.Integer 'java.lang.Short     _]   (short value)
                  [_ 'java.lang.String  'java.lang.Character _]   (first value)
                  [_ 'java.lang.String  _               true]   (let [klass (get-class-by-name property-type)]
                                                                  (Reflector/invokeStaticMethod klass "valueOf" (to-array [value])))

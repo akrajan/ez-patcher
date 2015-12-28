@@ -7,18 +7,33 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
   public static enum Status{ INACTIVE, ACTIVE };
 
   Integer id;
-  String myStr;
+  Byte myByte;
+  Short myShort;
   Integer myInt;
-  Float myFlt;
-  Character myChar;
   Long myLong;
+  Boolean myBool;
+  Float myFlt;
   Double myDbl;
+  Status status;
+  Character myChar;
+  String myStr;
   HelloWorld innerWorld;
   List<HelloWorld> others;
-  Status status;
 
   public String getMyStr() {
     return myStr;
+  }
+
+  public Byte getMyByte() {
+    return myByte;
+  }
+
+  public Short getMyShort() {
+    return myShort;
+  }
+
+  public Boolean getMyBool() {
+    return myBool;
   }
 
   public Character getMyChar() {
@@ -63,6 +78,18 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   public void setMyInt(Integer x) {
     this.myInt = x;
+  }
+
+  public void setMyBool(Boolean x) {
+    this.myBool = x;
+  }
+
+  public void setMyByte(Byte x) {
+    this.myByte = x;
+  }
+
+  public void setMyShort(Short x) {
+    this.myShort = x;
   }
 
   public void setMyLong(Long x) {
@@ -115,7 +142,8 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
 
   @Override
   public String toString() {
-    return "id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myChar: " + myChar + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr;
+    return "id:  " + id + " myBool: " + myBool + " myByte: " + myByte + " myShort: " + myShort +  " myInt: " + myInt +
+      " myLong: " + myLong + " myChar: " + myChar + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr;
   }
 
   public void puts(String a, Integer indentSize) {
@@ -125,7 +153,6 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
       indent.append(" ");
     }
 
-    //System.out.println(indent + a + " => id:  " + id + " myInt: " + myInt + " myLong: " + myLong + " myFlt: " + myFlt + " myDbl: " + myDbl + " status: " + status + " myStr: " + myStr);
     System.out.println(indent + a + " => " + toString());
 
     if(innerWorld != null) {
@@ -156,6 +183,9 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     hw.id = 0;
     hw.myChar = 'A';
     hw.myStr = "";
+    hw.myByte = 0;
+    hw.myShort = 0;
+    hw.myBool = true;
     hw.myInt = 0;
     hw.myFlt = 0.0f;
     hw.myLong = 0L;
@@ -176,6 +206,30 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
       return;
     } else if ( w.id == null || a == null || w.id != a ) {
       assertOn(w, "Id doesn't match. Expected: " + a);
+    }
+  }
+
+  public static void assertBool(HelloWorld w, Boolean a) {
+    if( w.myBool == null && a == null  ) {
+      return;
+    } else if ( w.myBool == null || a == null || w.myBool != a ) {
+      assertOn(w, "Boolean doesn't match. Expected: " + a);
+    }
+  }
+
+  public static void assertByte(HelloWorld w, Byte a) {
+    if( w.myByte == null && a == null  ) {
+      return;
+    } else if ( w.myByte == null || a == null || w.myByte != a ) {
+      assertOn(w, "Byte doesn't match. Expected: " + a);
+    }
+  }
+
+  public static void assertShort(HelloWorld w, Short a) {
+    if( w.myShort == null && a == null  ) {
+      return;
+    } else if ( w.myShort == null || a == null || w.myShort != a ) {
+      assertOn(w, "Short doesn't match. Expected: " + a);
     }
   }
 
@@ -260,6 +314,9 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     assertStr(hw, "");
     assertChar(hw, 'A');
     assertInt(hw, 0);
+    assertByte(hw, (byte) 0);
+    assertShort(hw, (short) 0);
+    assertBool(hw, true);
     assertFloat(hw, 0.0f);
     assertLong(hw, 0L);
     assertDouble(hw, 0.0);
@@ -269,6 +326,50 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
     System.out.println("testEmpty passed");
   }
 
+  public static void testBoolean(Patcher x) {
+    HelloWorld hw = createTestWorld();
+    hw.myBool = true;
+    String json = "{}";
+    x.patch(hw, json);
+    assertBool(hw, true);
+
+    x.patch(hw, "{\"myBool\": false}");
+    assertBool(hw, false);
+
+    x.patch(hw, "{\"myBool\": null}");
+    assertBool(hw, null);
+    System.out.println("testBoolean passed");
+  }
+
+  public static void testByte(Patcher x) {
+    HelloWorld hw = createTestWorld();
+    hw.myByte = (byte) 3;
+    String json = "{}";
+    x.patch(hw, json);
+    assertByte(hw, (byte) 3);
+
+    x.patch(hw, "{\"myByte\": 5}");
+    assertByte(hw, (byte) 5);
+
+    x.patch(hw, "{\"myByte\": null}");
+    assertByte(hw, null);
+    System.out.println("testByte passed");
+  }
+
+  public static void testShort(Patcher x) {
+    HelloWorld hw = createTestWorld();
+    hw.myShort = (short) 3;
+    String json = "{}";
+    x.patch(hw, json);
+    assertShort(hw, (short) 3);
+
+    x.patch(hw, "{\"myShort\": 5}");
+    assertShort(hw, (short) 5);
+
+    x.patch(hw, "{\"myShort\": null}");
+    assertShort(hw, null);
+    System.out.println("testShort passed");
+  }
 
   public static void testInteger(Patcher x) {
     HelloWorld hw = createTestWorld();
@@ -482,6 +583,9 @@ public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
   public static void main(String[] args) throws Exception {
     Patcher x = new Patcher();
     testEmpty(x);
+    testBoolean(x);
+    testByte(x);
+    testShort(x);
     testInteger(x);
     testLong(x);
     testCharacter(x);
