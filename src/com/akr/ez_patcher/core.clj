@@ -177,15 +177,13 @@
       obj)))
 
 (defn -updateWith [self obj string]
-  (with-out-str
-    (let [hsh (parse-string string)]
-      (cond (= (empty hsh) {}) (update-with obj hsh)
-            (= (empty hsh) []) (throw "Array class unspecified.")
-            :else hsh))))
+  (let [hsh (parse-string string)]
+    (cond (= (empty hsh) {}) (update-with obj hsh)
+          (= (empty hsh) []) (throw "Array class unspecified.")
+          :else hsh)))
 
 
 (defn -toArray [self string klass]
-  (do  ;with-out-str
-    (let [hsh (parse-string string)]
-      (cond (= (empty hsh) []) (create-array-with hsh klass)
-            :else (throw "Not an array.")))))
+  (let [hsh (parse-string string)]
+    (cond (= (empty hsh) []) (create-array-with hsh klass)
+          :else (throw "Not an array."))))
