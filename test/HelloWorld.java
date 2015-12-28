@@ -216,12 +216,6 @@ public class HelloWorld implements com.pro.akr.Comparator {
     }
   }
 
-  //public static void assertDouble(HelloWorld w, Double a) {
-    //if(!w.myDbl.equals(a)){
-      //assertOn(w, "Double doesn't match. Expected: " + a);
-    //}
-  //}
-
   public static void assertStatus(HelloWorld w, Status a) {
     if( w.status == null && a == null  ) {
       return;
@@ -334,6 +328,21 @@ public class HelloWorld implements com.pro.akr.Comparator {
     System.out.println("testString passed");
   }
 
+  public static void testStatus(UpdateOnly x) {
+    HelloWorld hw = createTestWorld();
+    hw.status = Status.ACTIVE;
+    String json = "{}";
+    x.updateWith(hw, json);
+    assertStatus(hw, Status.ACTIVE);
+
+    x.updateWith(hw, "{\"status\": \"INACTIVE\"}");
+    assertStatus(hw, Status.INACTIVE);
+
+    x.updateWith(hw, "{\"status\": null}");
+    assertStatus(hw, null);
+    System.out.println("testStatus passed");
+  }
+
   //public static void testComponent() {
   //}
 
@@ -356,6 +365,7 @@ public class HelloWorld implements com.pro.akr.Comparator {
     testFloat(x);
     testDouble(x);
     testString(x);
+    testStatus(x);
   }
 }
 
