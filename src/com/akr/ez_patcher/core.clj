@@ -7,13 +7,13 @@
             [clojure.core.match :refer [match]])
   (:import [clojure.lang Reflector]
            [java.lang.reflect Field ParameterizedType])
-  (:gen-class :name com.pro.akr.UpdateOnly
-              :methods [[updateWith [Object String] Object]
+  (:gen-class :name com.pro.akr.ezPatcher.Patcher
+              :methods [[patch [Object String] Object]
                         [toArray [String Class] Object]]))
 
 
 (gen-interface
- :name com.pro.akr.Comparator
+ :name com.pro.akr.ezPatcher.Comparator
  :methods [[isSame [Object] Boolean]])
 
 
@@ -113,7 +113,7 @@
                                                                                 (getGenericType)
                                                                                 (getActualTypeArguments))
                                                             klass (first generic-classes)
-                                                            implements-comparator? (instance? com.pro.akr.Comparator (instantiate klass))
+                                                            implements-comparator? (instance? com.pro.akr.ezPatcher.Comparator (instantiate klass))
                                                             existing-array (into [] (or current-value []))
                                                             new-array (for [x value
                                                                             :let [obj (instantiate klass)]]
@@ -161,7 +161,7 @@
       (update-with obj x)
       obj)))
 
-(defn -updateWith [self obj string]
+(defn -patch [self obj string]
   (let [hsh (parse-string string)]
     (cond (= (empty hsh) {}) (update-with obj hsh)
           (= (empty hsh) []) (throw "Array class unspecified.")

@@ -1,9 +1,9 @@
-import com.pro.akr.*;
+import com.pro.akr.ezPatcher.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.reflect.ParameterizedType;
 
-public class HelloWorld implements com.pro.akr.Comparator {
+public class HelloWorld implements com.pro.akr.ezPatcher.Comparator {
   public static enum Status{ INACTIVE, ACTIVE };
 
   Integer id;
@@ -242,9 +242,9 @@ public class HelloWorld implements com.pro.akr.Comparator {
      }
   }
 
-  public static void testEmpty(UpdateOnly x) {
+  public static void testEmpty(Patcher x) {
     HelloWorld hw = createTestWorld();
-    x.updateWith(hw, "{}");
+    x.patch(hw, "{}");
     assertId(hw, 0);
     assertStr(hw, "");
     assertInt(hw, 0);
@@ -258,118 +258,118 @@ public class HelloWorld implements com.pro.akr.Comparator {
   }
 
 
-  public static void testInteger(UpdateOnly x) {
+  public static void testInteger(Patcher x) {
     HelloWorld hw = createTestWorld();
     hw.myInt = 10;
     String json = "{}";
-    x.updateWith(hw, json);
+    x.patch(hw, json);
     assertInt(hw, 10);
 
-    x.updateWith(hw, "{\"myInt\": 50}");
+    x.patch(hw, "{\"myInt\": 50}");
     assertInt(hw, 50);
 
-    x.updateWith(hw, "{\"myInt\": null}");
+    x.patch(hw, "{\"myInt\": null}");
     assertInt(hw, null);
     System.out.println("testInteger passed");
   }
 
-  public static void testLong(UpdateOnly x) {
+  public static void testLong(Patcher x) {
     HelloWorld hw = createTestWorld();
     hw.myLong = 10L;
     String json = "{}";
-    x.updateWith(hw, json);
+    x.patch(hw, json);
     assertLong(hw, 10L);
 
-    x.updateWith(hw, "{\"myLong\": 50}");
+    x.patch(hw, "{\"myLong\": 50}");
     assertLong(hw, 50L);
 
-    x.updateWith(hw, "{\"myLong\": null}");
+    x.patch(hw, "{\"myLong\": null}");
     assertLong(hw, null);
     System.out.println("testLong passed");
   }
 
-  public static void testFloat(UpdateOnly x) {
+  public static void testFloat(Patcher x) {
     HelloWorld hw = createTestWorld();
     hw.myFlt = 10.0f;
     String json = "{}";
-    x.updateWith(hw, json);
+    x.patch(hw, json);
     assertFloat(hw, 10.0f);
 
-    x.updateWith(hw, "{\"myFlt\": 50.0}");
+    x.patch(hw, "{\"myFlt\": 50.0}");
     assertFloat(hw, 50.0f);
 
-    x.updateWith(hw, "{\"myFlt\": null}");
+    x.patch(hw, "{\"myFlt\": null}");
     assertFloat(hw, null);
     System.out.println("testFloat passed");
   }
 
-  public static void testDouble(UpdateOnly x) {
+  public static void testDouble(Patcher x) {
     HelloWorld hw = createTestWorld();
     hw.myDbl = 10.0;
     String json = "{}";
-    x.updateWith(hw, json);
+    x.patch(hw, json);
     assertDouble(hw, 10.0);
 
-    x.updateWith(hw, "{\"myDbl\": 50.0}");
+    x.patch(hw, "{\"myDbl\": 50.0}");
     assertDouble(hw, 50.0);
 
-    x.updateWith(hw, "{\"myDbl\": null}");
+    x.patch(hw, "{\"myDbl\": null}");
     assertDouble(hw, null);
     System.out.println("testDouble passed");
   }
 
-  public static void testString(UpdateOnly x) {
+  public static void testString(Patcher x) {
     HelloWorld hw = createTestWorld();
     hw.myStr = "Hello";
     String json = "{}";
-    x.updateWith(hw, json);
+    x.patch(hw, json);
     assertStr(hw, "Hello");
 
-    x.updateWith(hw, "{\"myStr\": \"World\"}");
+    x.patch(hw, "{\"myStr\": \"World\"}");
     assertStr(hw, "World");
 
-    x.updateWith(hw, "{\"myStr\": null}");
+    x.patch(hw, "{\"myStr\": null}");
     assertStr(hw, null);
     System.out.println("testString passed");
   }
 
-  public static void testStatus(UpdateOnly x) {
+  public static void testStatus(Patcher x) {
     HelloWorld hw = createTestWorld();
     hw.status = Status.ACTIVE;
     String json = "{}";
-    x.updateWith(hw, json);
+    x.patch(hw, json);
     assertStatus(hw, Status.ACTIVE);
 
-    x.updateWith(hw, "{\"status\": \"INACTIVE\"}");
+    x.patch(hw, "{\"status\": \"INACTIVE\"}");
     assertStatus(hw, Status.INACTIVE);
 
-    x.updateWith(hw, "{\"status\": null}");
+    x.patch(hw, "{\"status\": null}");
     assertStatus(hw, null);
     System.out.println("testStatus passed");
   }
 
-  public static void testComponent(UpdateOnly x) {
+  public static void testComponent(Patcher x) {
     HelloWorld hw = createTestWorld();
     HelloWorld innerWorld;
 
-    x.updateWith(hw, "{\"innerWorld\": {\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}}");
+    x.patch(hw, "{\"innerWorld\": {\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}}");
     innerWorld = hw.innerWorld;
     assertStr(innerWorld, null);
     assertInt(innerWorld, 50);
     assertDouble(innerWorld, 42.2);
 
 
-    x.updateWith(hw, "{\"innerWorld\": {\"myStr\": \"I Exist\", \"myInt\": 55, \"myDbl\": null}}");
+    x.patch(hw, "{\"innerWorld\": {\"myStr\": \"I Exist\", \"myInt\": 55, \"myDbl\": null}}");
     assertStr(innerWorld, "I Exist");
     assertInt(innerWorld, 55);
     assertDouble(innerWorld, null);
   }
 
-  public static void testInnerArray(UpdateOnly x) {
+  public static void testInnerArray(Patcher x) {
     HelloWorld hw = createTestWorld();
     HelloWorld other;
 
-    x.updateWith(hw, "{\"others\": [{\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}]}");
+    x.patch(hw, "{\"others\": [{\"myStr\": null, \"myInt\": 50, \"myDbl\": 42.2}]}");
 
     assertOthersSize(hw, 1);
     other = hw.others.get(0);
@@ -377,12 +377,12 @@ public class HelloWorld implements com.pro.akr.Comparator {
     assertInt(other, 50);
     assertDouble(other, 42.2);
 
-    x.updateWith(hw, "{\"others\": []}");
+    x.patch(hw, "{\"others\": []}");
     if(hw.others.size() != 0){
       throw new RuntimeException("Inner Array size doesn't match");
     }
 
-    x.updateWith(hw, "{\"others\": [{\"myStr\": \"First\"}, {\"myStr\": \"Second\"}]}");
+    x.patch(hw, "{\"others\": [{\"myStr\": \"First\"}, {\"myStr\": \"Second\"}]}");
 
     if(hw.others.size() != 2){
       throw new RuntimeException("Inner Array size doesn't match");
@@ -396,12 +396,12 @@ public class HelloWorld implements com.pro.akr.Comparator {
     System.out.println("Inner Array test passed");
   }
 
-  public static void testComparator(UpdateOnly x) {
+  public static void testComparator(Patcher x) {
     HelloWorld hw = createTestWorld();
     HelloWorld other;
-    x.updateWith(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"First\", \"myInt\": 1}, {\"id\": 2, \"myStr\": \"Second\"}]}");
+    x.patch(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"First\", \"myInt\": 1}, {\"id\": 2, \"myStr\": \"Second\"}]}");
 
-    x.updateWith(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"Updated First\"}, {\"id\": 3, \"myStr\": \"Third\"}]}");
+    x.patch(hw, "{\"others\": [{\"id\": 1, \"myStr\": \"Updated First\"}, {\"id\": 3, \"myStr\": \"Third\"}]}");
     assertOthersSize(hw, 2);
     other = hw.others.get(0);
     assertId(other, 1);
@@ -415,11 +415,11 @@ public class HelloWorld implements com.pro.akr.Comparator {
     System.out.println("Comparator test passed");
   }
 
-  public static void testSecondaryNesting(UpdateOnly x) {
+  public static void testSecondaryNesting(Patcher x) {
     HelloWorld hw = createTestWorld();
     HelloWorld other;
 
-    x.updateWith(hw, "{\"others\": [{\"others\":[{\"myStr\": \"Two Levels Deep\"}]} ]}");
+    x.patch(hw, "{\"others\": [{\"others\":[{\"myStr\": \"Two Levels Deep\"}]} ]}");
 
     assertOthersSize(hw, 1);
     other = hw.others.get(0).others.get(0);
@@ -428,7 +428,7 @@ public class HelloWorld implements com.pro.akr.Comparator {
     System.out.println("Secondary nesting test passed");
   }
 
-  public static void testArrayDecode(UpdateOnly x) {
+  public static void testArrayDecode(Patcher x) {
     String json = "[{\"myStr\": \"Final String\", \"myFlt\": 2.0, \"innerWorld\": {\"myStr\": \"Inner World String\"}}, {\"myStr\": \"JsonArray2\", \"status\": \"INACTIVE\"}]";
     List<HelloWorld> allWorlds = (List<HelloWorld>) x.toArray(json, HelloWorld.class);
 
@@ -452,7 +452,7 @@ public class HelloWorld implements com.pro.akr.Comparator {
   }
 
   public static void main(String[] args) throws Exception {
-    UpdateOnly x = new UpdateOnly();
+    Patcher x = new Patcher();
     testEmpty(x);
     testInteger(x);
     testLong(x);
