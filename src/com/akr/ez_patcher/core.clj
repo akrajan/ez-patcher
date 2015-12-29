@@ -52,8 +52,8 @@
 
 (defn construct [klass & args]
   (.newInstance
-    (.getConstructor klass (into-array java.lang.Class (map type args)))
-    (object-array args)))
+   (.getConstructor klass (into-array java.lang.Class (map type args)))
+   (object-array args)))
 
 
 (defn get-nested-object [obj reflector property]
@@ -104,8 +104,8 @@
 
                  [nil _ _ _] nil
                  [_ 'clojure.lang.PersistentArrayMap _ _] (let [nested-object (get-nested-object obj reflector prop)]
-                                                          (update-with nested-object value)
-                                                          nested-object)
+                                                            (update-with nested-object value)
+                                                            nested-object)
                  [_ 'clojure.lang.PersistentVector   _ _] (let [generic-classes (.. (class obj)
                                                                                     (getDeclaredField prop)
                                                                                     (getGenericType)
@@ -147,8 +147,8 @@
                  [_ 'java.lang.String  _                 true]   (let [klass (get-class-by-name property-type)]
                                                                    (Reflector/invokeStaticMethod klass "valueOf" (to-array [value])))
                  :else (-> property-type
-                             (resolve)
-                             (cast value)))]
+                           (resolve)
+                           (cast value)))]
 
       (Reflector/invokeInstanceMethod obj
                                       setter
